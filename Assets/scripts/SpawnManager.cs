@@ -2,45 +2,39 @@ using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
 {
-    [Header("Settings")]
-    [SerializeField] private GameObject blockPrefab;
-    [SerializeField] private Transform spawnPoint;
-    
-    [Header("Speed Settings")]
-    [SerializeField] private float minSpeed = 5f;
-    [SerializeField] private float maxSpeed = 10f;
-    
-    private GameObject currentBlock;
+    public GameObject obstaclePrefab;
+    public JumperAgent agent;
+
+    public float minSpeed = 10f;
+    public float maxSpeed = 15f;
+
+    private GameObject currentObstacle;
 
     void Update()
     {
-        // Als er geen blok is (omdat hij destroyed is door KillZone of Reset)
-        if (currentBlock == null)
+        if (currentObstacle == null)
         {
-            SpawnBlock();
+            Spawn();
         }
     }
 
-    void SpawnBlock()
+    private void Spawn()
     {
-        if (blockPrefab == null || spawnPoint == null) return;
+        currentObstacle = Instantiate(obstaclePrefab, transform.position, Quaternion.identity, transform.parent);
 
-        currentBlock = Instantiate(blockPrefab, spawnPoint.position, Quaternion.identity, transform);
-
-        float randomSpeed = Random.Range(minSpeed, maxSpeed);
-        BlockMovement moveScript = currentBlock.GetComponent<BlockMovement>();
-        
-        if (moveScript != null)
+        Obstacle obstacleScript = currentObstacle.GetComponent<Obstacle>();
+        if (obstacleScript != null)
         {
-            moveScript.SetSpeed(randomSpeed);
+            obstacleScript.speed = Random.Range(minSpeed, maxSpeed);
+            obstacleScript.agent = agent;
         }
     }
 
-    public void ResetSpawner()
+    public void ClearObstacles()
     {
-        if (currentBlock != null) 
+        if (currentObstacle != null)
         {
-            Destroy(currentBlock);
+            Destroy(currentObstacle);
         }
     }
 }

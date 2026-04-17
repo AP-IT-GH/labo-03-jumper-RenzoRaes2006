@@ -5,9 +5,13 @@ using Unity.MLAgents.Sensors;
 
 public class JumperAgent : Agent
 {
-    [SerializeField] private float jumpForce = 10f;
-    [SerializeField] private SpawnManager spawnManager;
-    [SerializeField] private RayPerceptionSensorComponent3D raySensor;
+    [Header("Settings")]
+    public float jumpForce = 15f;
+    public float fallMultiplier = 2.5f;
+    
+    [Header("References")]
+    public SpawnManager spawner;
+    public RayPerceptionSensorComponent3D raySensor;
 
     private Rigidbody rb;
     private bool isGrounded;
@@ -22,48 +26,49 @@ public class JumperAgent : Agent
 
     public override void OnEpisodeBegin()
     {
-        // Reset fysica en positie
         rb.linearVelocity = Vector3.zero;
         transform.localPosition = startPosition;
+        isGrounded = true;
 
-        // Reset de spawner (verwijder oude blokken)
-        if (spawnManager != null)
+        if (spawner != null)
         {
-            spawnManager.ResetSpawner();
+            spawner.ClearObstacles();
+        }
+    }
+
+    private void Update()
+    {
+        // Makes the jump snappy and fast
+        if (rb.linearVelocity.y < 0)
+        {
+            rb.linearVelocity += Vector3.up * Physics.gravity.y * (fallMultiplier - 1) * Time.deltaTime;
         }
     }
 
     public override void OnActionReceived(ActionBuffers actions)
     {
-        bool isJumping = actions.DiscreteActions[0] == 1;
+        // 1. Tiny reward for surviving every step
+        AddReward(0.001f);
 
-        if (isJumping)
+        int jumpAction = actions.DiscreteActions[0];
+
+        if (jumpAction == 1 && isGrounded)
         {
-            if (isGrounded)
+            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            isGrounded = false;
+            
+            // 2. Penalty for jumping when the ray sensor sees nothing
+            if (!CheckIfBlockInSight())
             {
-                rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-                isGrounded = false;
-                // Kleine aanmoediging om de actie 'springen' te ontdekken
-                AddReward(-0.05f); // Een kleine "kost" voor energieverbruik            }
-            }
-            else // De AI kiest om NIET te springen
-            {
-                if (CheckIfBlockInSight())
-                {
-                    AddReward(-0.01f);
-                }
-                else
-                {
-                    AddReward(0.01f);
-                }
+                AddReward(-0.05f); 
             }
         }
     }
+
     private bool CheckIfBlockInSight()
     {
-        // Gebruik de sensor om te kijken of er een "Block" aankomt
+        // Check if the sensor detects anything with the tag "Block"
         var rayOutputs = RayPerceptionSensor.Perceive(raySensor.GetRayPerceptionInput(), false).RayOutputs;
-
         if (rayOutputs != null)
         {
             foreach (var ray in rayOutputs)
@@ -90,9 +95,9 @@ public class JumperAgent : Agent
             isGrounded = true;
         }
 
+        // 3. Real physical collision with the block
         if (collision.gameObject.CompareTag("Block"))
         {
-            // Grote straf bij raken en stop de episode
             SetReward(-1.0f);
             EndEpisode();
         }

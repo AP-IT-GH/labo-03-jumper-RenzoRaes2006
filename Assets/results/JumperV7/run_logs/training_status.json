@@ -1,0 +1,29 @@
+{
+    "JumperBehavior": {
+        "checkpoints": [
+            {
+                "steps": 155265,
+                "file_path": "results\\JumperV7\\JumperBehavior\\JumperBehavior-155265.onnx",
+                "reward": 58.31999760866165,
+                "creation_time": 1774972506.5239325,
+                "auxillary_file_paths": [
+                    "results\\JumperV7\\JumperBehavior\\JumperBehavior-155265.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 155265,
+            "file_path": "results\\JumperV7\\JumperBehavior.onnx",
+            "reward": 58.31999760866165,
+            "creation_time": 1774972506.5239325,
+            "auxillary_file_paths": [
+                "results\\JumperV7\\JumperBehavior\\JumperBehavior-155265.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "0.30.0",
+        "torch_version": "1.7.1+cpu"
+    }
+}
