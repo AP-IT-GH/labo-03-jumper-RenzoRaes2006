@@ -429,6 +429,7 @@ GameObject:
   - component: {fileID: 690617600}
   - component: {fileID: 690617602}
   - component: {fileID: 690617601}
+  - component: {fileID: 690617604}
   m_Layer: 0
   m_Name: Agent
   m_TagString: Player
@@ -557,7 +558,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_SensorName: RayPerceptionSensor
+  m_SensorName: RayPerceptionGround
   m_DetectableTags:
   - Block
   m_RaysPerDirection: 2
@@ -647,6 +648,35 @@ MonoBehaviour:
   m_UseChildActuators: 1
   m_DeterministicInference: 0
   m_ObservableAttributeHandling: 0
+--- !u!114 &690617604
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 690617594}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SensorName: RayPerceptionSensor
+  m_DetectableTags:
+  - Coin
+  m_RaysPerDirection: 3
+  m_MaxRayDegrees: 70
+  m_SphereCastRadius: 0.5
+  m_RayLength: 20
+  m_RayLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967291
+  m_ObservationStacks: 3
+  m_AlternatingRayOrder: 1
+  m_UseBatchedRaycasts: 0
+  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
+  rayMissColor: {r: 0, g: 0.011795549, b: 0.3433962, a: 1}
+  m_StartVerticalOffset: 0.5
+  m_EndVerticalOffset: 3
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
@@ -740,10 +770,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be3f206be1d7f5f43a993cdf72201e7f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  obstaclePrefab: {fileID: 2349837166587083311, guid: 1b990f641ff1eab4a902ab19ea2ddd6d, type: 3}
+  blockPrefab: {fileID: 2349837166587083311, guid: 1b990f641ff1eab4a902ab19ea2ddd6d, type: 3}
+  coinPrefab: {fileID: 5940897902373292907, guid: 92f946e7a70d1e34ea133ba12038c2fb, type: 3}
   agent: {fileID: 690617599}
   minSpeed: 8
   maxSpeed: 15
+  coinSpawnHeight: 2.5
 --- !u!1 &1580004856
 GameObject:
   m_ObjectHideFlags: 0
@@ -756,6 +788,7 @@ GameObject:
   - component: {fileID: 1580004860}
   - component: {fileID: 1580004859}
   - component: {fileID: 1580004858}
+  - component: {fileID: 1580004861}
   m_Layer: 0
   m_Name: Ground
   m_TagString: Ground
@@ -852,6 +885,20 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1580004856}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1580004861
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1580004856}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0862d26a2f9ef2046a047a9f12796d30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 0
+  agent: {fileID: 0}
 --- !u!1 &1850381680
 GameObject:
   m_ObjectHideFlags: 0

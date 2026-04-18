@@ -2,11 +2,17 @@ using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
 {
-    public GameObject obstaclePrefab;
+[Header("Prefabs")]
+    public GameObject blockPrefab;
+    public GameObject coinPrefab;
+    
+    [Header("Settings")]
     public JumperAgent agent;
-
     public float minSpeed = 10f;
     public float maxSpeed = 15f;
+    
+    // Hoe hoog moet het muntje zweven? Pas dit aan in Unity als hij er niet bij kan!
+    public float coinSpawnHeight = 2.5f; 
 
     private GameObject currentObstacle;
 
@@ -20,8 +26,17 @@ public class SpawnManager : MonoBehaviour
 
     private void Spawn()
     {
-        currentObstacle = Instantiate(obstaclePrefab, transform.position, Quaternion.identity, transform.parent);
+        bool spawnCoin = Random.value > 0.5f; 
+        GameObject prefabToSpawn = spawnCoin ? coinPrefab : blockPrefab;
 
+        Vector3 spawnPos = transform.position;
+        if (spawnCoin)
+        {
+            spawnPos.y = coinSpawnHeight; 
+        }
+
+        currentObstacle = Instantiate(prefabToSpawn, spawnPos, Quaternion.identity, transform.parent);
+        
         Obstacle obstacleScript = currentObstacle.GetComponent<Obstacle>();
         if (obstacleScript != null)
         {

@@ -9,16 +9,13 @@ public class Obstacle : MonoBehaviour
 
     void Start()
     {
-        // Haal de rigidbody van het blokje op
         rb = GetComponent<Rigidbody>();
     }
 
-    // Gebruik FixedUpdate in plaats van Update voor ALLES wat met Physics te maken heeft
     void FixedUpdate()
     {
         if (rb != null)
         {
-            // Bereken de nieuwe positie en verplaats hem met de physics engine
             Vector3 targetPosition = rb.position + Vector3.back * speed * Time.fixedDeltaTime;
             rb.MovePosition(targetPosition);
         }
@@ -26,15 +23,22 @@ public class Obstacle : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        // Dit blijft OnTriggerEnter omdat de muur achter de agent (KillZone) wel een Trigger is
         if (other.CompareTag("KillZone"))
         {
             if (agent != null)
             {
-                agent.SetReward(1.0f);
-                agent.EndEpisode();
+                if (gameObject.CompareTag("Block"))
+                {
+                    agent.SetReward(1.0f);
+                    agent.EndEpisode();
+                }
+                else if (gameObject.CompareTag("Coin"))
+                {
+                    agent.SetReward(-1.0f);
+                    agent.EndEpisode();
+                }
             }
             Destroy(gameObject);
         }
     }
-}   
+}

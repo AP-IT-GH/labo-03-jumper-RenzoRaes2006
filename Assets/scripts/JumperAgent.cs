@@ -38,7 +38,6 @@ public class JumperAgent : Agent
 
     private void Update()
     {
-        // Makes the jump snappy and fast
         if (rb.linearVelocity.y < 0)
         {
             rb.linearVelocity += Vector3.up * Physics.gravity.y * (fallMultiplier - 1) * Time.deltaTime;
@@ -47,8 +46,7 @@ public class JumperAgent : Agent
 
     public override void OnActionReceived(ActionBuffers actions)
     {
-        // 1. Tiny reward for surviving every step
-        AddReward(0.001f);
+        AddReward(0.001f); // Survival bonus
 
         int jumpAction = actions.DiscreteActions[0];
 
@@ -57,23 +55,22 @@ public class JumperAgent : Agent
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
             isGrounded = false;
             
-            // 2. Penalty for jumping when the ray sensor sees nothing
-            if (!CheckIfBlockInSight())
+            if (!CheckIfObjectInSight())
             {
-                AddReward(-0.05f); 
+                AddReward(-0.05f);
             }
         }
     }
 
-    private bool CheckIfBlockInSight()
+    private bool CheckIfObjectInSight()
     {
-        // Check if the sensor detects anything with the tag "Block"
         var rayOutputs = RayPerceptionSensor.Perceive(raySensor.GetRayPerceptionInput(), false).RayOutputs;
         if (rayOutputs != null)
         {
             foreach (var ray in rayOutputs)
             {
-                if (ray.HitGameObject != null && ray.HitGameObject.CompareTag("Block"))
+                if (ray.HitGameObject != null && 
+                   (ray.HitGameObject.CompareTag("Block") || ray.HitGameObject.CompareTag("Coin")))
                 {
                     return true;
                 }
@@ -95,11 +92,20 @@ public class JumperAgent : Agent
             isGrounded = true;
         }
 
-        // 3. Real physical collision with the block
         if (collision.gameObject.CompareTag("Block"))
         {
             SetReward(-1.0f);
             EndEpisode();
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Coin"))
+        {
+            SetReward(1.0f);
+            EndEpisode();
+            Destroy(other.gameObject);
         }
     }
 }
